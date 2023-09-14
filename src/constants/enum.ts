@@ -7,5 +7,5 @@ export enum AsyncStatus {
 
 export enum ResourceStatus {
   HEALTHY = "Healthy",
-  UNHEALTHY = "Unhealthy"
+  UNHEALTHY = "Unhealthy",
 }

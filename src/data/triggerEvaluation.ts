@@ -8,15 +8,19 @@ export async function triggerEvaluation(
   token: string,
   resourceIds: string[]
 ): Promise<TriggerEvaluationResults | undefined> {
-  const response = await axios.post(Endpoints.triggerEvaluation, {
-    resourceIds
-  }, {
-    headers: {
-      "Authorization": token,
-      "Content-Type": "application/json",
-      "x-ms-aad-user-token": token
+  const response = await axios.post(
+    Endpoints.triggerEvaluation,
+    {
+      resourceIds,
+    },
+    {
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+        "x-ms-aad-user-token": token,
+      },
     }
-  });
+  );
 
   if (!isResponseOk(response.status)) {
     throw new Error(`trigger evaluation request failed`);
@@ -26,7 +30,9 @@ export async function triggerEvaluation(
   const operationRes = await pollUntilDone(token, operationUrl);
 
   if (operationRes.status !== AsyncStatus.SUCCEEDED) {
-    throw new Error(`trigger evaluation failed, code: ${operationRes.error?.code}, message: ${operationRes.error?.message}`);
+    throw new Error(
+      `trigger evaluation failed, code: ${operationRes.error?.code}, message: ${operationRes.error?.message}`
+    );
   }
 
   return operationRes.properties;

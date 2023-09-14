@@ -5,13 +5,18 @@ import { getResourceIdsByDeployments } from "./data/deployment";
 import { onboard } from "./data/onboard";
 import { createOrUpdateReport, getReport } from "./data/report";
 import { triggerEvaluation } from "./data/triggerEvaluation";
-import { getCredToken, getResourceSubscription, tryParseJsonArray, waitOnboardFinish } from "./utils/common";
+import {
+  getCredToken,
+  getResourceSubscription,
+  tryParseJsonArray,
+  waitOnboardFinish,
+} from "./utils/common";
 import { printAssessments } from "./utils/output";
 
 async function start() {
   try {
-    const deploymentJson = core.getInput('deployment-ids');
-    const reportName = core.getInput('report-name');
+    const deploymentJson = core.getInput("deployment-ids");
+    const reportName = core.getInput("report-name");
 
     if (!deploymentJson && !reportName) {
       throw new Error("Please configure deployment id or report name");
@@ -27,11 +32,11 @@ async function start() {
       let deploymentIds: string[] = tryParseJsonArray(deploymentJson);
       resourceIds = await getResourceIdsByDeployments(cred, deploymentIds);
     } else {
-      const report = await getReport(acatClient, token, reportName)
-      resourceIds = report.properties.resources.map(meta => meta.resourceId);
+      const report = await getReport(acatClient, token, reportName);
+      resourceIds = report.properties.resources.map((meta) => meta.resourceId);
     }
 
-    const subscriptionIds = resourceIds.map(id => getResourceSubscription(id));
+    const subscriptionIds = resourceIds.map((id) => getResourceSubscription(id));
 
     await onboard(token, subscriptionIds);
     await waitOnboardFinish();
@@ -45,7 +50,6 @@ async function start() {
     core.info("Generating quick assessments for all resources...");
     const results = await triggerEvaluation(token, resourceIds);
     printAssessments(results);
-
   } catch (error) {
     core.setFailed(error.message);
   }
